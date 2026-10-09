@@ -6,7 +6,7 @@ import { CATEGORIES } from '../data/categories';
  * changing the wheel or presentation components.
  */
 export const EVENT = {
-  chapterName: 'GDG ON CAMPUS',
+  chapterName: 'GDG on Campus',
   universityName: 'University of Primorska',
   eventName: 'ŠtartUP 2026',
   eyebrow: 'A little challenge. A lot of fun.',

@@ -66,3 +66,5 @@ button:focus-visible { outline: 3px solid #d9e6ff; outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+.glass { background: rgba(255,255,255,.45); border: 1px solid rgba(11,42,102,.22);
+  backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); }
