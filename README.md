@@ -4,7 +4,7 @@ A reusable, self-hostable challenge wheel for **GDG on Campus — University of 
 
 Current event: **ŠtartUP 2026**. Visitors spin a six-category wheel, draw a matching **physical challenge card**, complete it, and receive a stamp.
 
-Built with **React 19, TypeScript, Vite 7, and Tailwind CSS v4**. No backend, database, icon library, web fonts, or external API requests are required at runtime.
+Built with **React 19, TypeScript, Vite 7, and Tailwind CSS v4**. No backend, database or external requests at runtime: the Inter Tight font and the cloud background are bundled into the build.
 
 ## Quick start
 
@@ -36,16 +36,19 @@ gdg-challenge-wheel/
 │   ├── config/event.ts            # Event copy and current category selection
 │   ├── data/categories.ts         # Six currently hardcoded categories
 │   ├── components/
-│   │   ├── ChallengeWheel.tsx     # SVG slices, labels, pointer and spin button
-│   │   ├── ChallengePanel.tsx     # Result, category legend and repeat button
-│   │   ├── Header.tsx             # Event badge, sound and fullscreen controls
-│   │   ├── Confetti.tsx           # Celebration particles
-│   │   └── Glyph.tsx              # Tiny inline icon drawings
+│   │   ├── ChallengeWheel.tsx     # Glass SVG ring, labels, pointer and logo spin button
+│   │   ├── ChallengePanel.tsx     # Glass result card and spin button
+│   │   ├── StepRail.tsx           # How-to-play steps (list on desktop, chips on phones)
+│   │   ├── Header.tsx             # Logo, event badge, sound and fullscreen controls
+│   │   ├── GdgLogo.tsx            # The GDG brackets mark as inline SVG
+│   │   └── Confetti.tsx           # Celebration particles
+│   ├── assets/clouds-*.webp       # Background photo (desktop and phone sizes)
 │   ├── hooks/useWheel.ts          # Spin state and animation
 │   ├── hooks/useSound.ts          # Optional Web Audio sound
+│   ├── hooks/useSpinCount.ts      # Today's spin count on this device
 │   ├── lib/wheelMath.ts           # Framework-independent wheel geometry
 │   ├── lib/wheelMath.test.ts      # Wheel alignment tests
-│   ├── styles.css                 # Tailwind import + special visuals/breakpoints
+│   ├── styles.css                 # Tailwind import, theme colors, background, glass
 │   ├── App.tsx                    # Composes the screen
 │   └── main.tsx                   # React entrypoint
 └── package.json
@@ -53,8 +56,8 @@ gdg-challenge-wheel/
 
 ## Customization (hardcoded for now)
 
-- Change the **event title, university name, intro copy, footer text, and category list** in `src/config/event.ts`.
-- Change **category names, colors, icons, labels and instructions** in `src/data/categories.ts`.
+- Change the **chapter, university, event name and category list** in `src/config/event.ts`.
+- Change **category names, wheel labels, confetti colors and instructions** in `src/data/categories.ts`.
 - `ChallengeWheel` draws segments from the array; `useWheel` calculates angles using the category count. There is no need to rewrite the spin logic to reorder categories.
 - For now each category has two short lines designed for the six-segment wheel. Long labels or substantially different category counts will need layout testing.
 - Questions and answers are **not stored in the app yet**: the game deliberately uses the already printed cards. A future release can add typed `Question` objects and choose a random question on-screen.
@@ -63,20 +66,17 @@ gdg-challenge-wheel/
 
 ## Why little HTML and CSS?
 
-`index.html` is only the root element and Vite script. The UI lives in `.tsx` components, which GitHub recognizes as **TypeScript**. Tailwind utility classes handle layout, color, typography and responsiveness. `src/styles.css` only contains the Tailwind import, special fullscreen/tablet breakpoints, pseudo-elements for the pointer, background effects and keyframe animations.
+`index.html` is only the root element and Vite script. The UI lives in `.tsx` components, which GitHub recognizes as **TypeScript**. Tailwind utility classes handle layout, color, typography and responsiveness. `src/styles.css` only contains the Tailwind and font imports, the theme colors, the cloud background, the shared `.glass` surface and the confetti animation.
 
 The much longer 18 KB stylesheet from the earlier non-Tailwind version is **not used** by this project. Check that `src/styles.css` begins with `@import "tailwindcss";`. The previous standalone `offline-backup/index.html` is **intentionally not included** in this repository because it was an entire second application in one HTML file and artificially increased GitHub's HTML percentage. The former project archive can be retained separately as an emergency fallback.
 
 `.gitignore` excludes `node_modules`, `dist` and temporary build files. Do not commit your generated `dist/` directory to the source branch unless you're deliberately publishing a dedicated deployment branch.
 
-## Tablet / kiosk layout
+## Layout
 
-- On typical landscape and portrait tablets the game is sized to **100dvh**, with screen-height-aware wheel dimensions.
-- On large laptop/desktop screens with a mouse or trackpad, the result panel uses a balanced 510px minimum height with more breathing room, rather than stretching to the wheel height. A dedicated Tailwind `desktop:` variant isolates this from touch tablet layouts.
-- On landscape touch tablets with the browser toolbar visible, the result panel is centered independently of the wheel and no longer stretches to fill all available height. The `touch-landscape:` variant enforces this on coarse-pointer displays.
-- On especially short landscape viewports the category legend is hidden to prioritize the wheel and the selected challenge; the tablet panel can shrink to a comfortable 290px minimum height so it does not look empty.
-- On phones, vertical scrolling is allowed so the game controls are not clipped.
-- Use the header button for fullscreen. Space also spins the wheel when focus is not on a form control.
+- **Desktop and landscape tablets:** steps on the left, the wheel in the middle and the result card on the right, over a sea of clouds, with the large "SPIN. PLAY. LEARN TECH" headline along the bottom. A small pill counts today's spins on this device.
+- **Phones and portrait tablets (900px wide or less):** one scrolling column — header with a menu for sound and fullscreen, the event badge, the steps as chips, the wheel, the result card and the headline.
+- Tap the logo in the middle of the wheel or the blue button to spin. Space also spins when focus is not on a button.
 - The wheel respects the operating system's reduced-motion preference.
 
 ## Deploy using Caddy
@@ -123,14 +123,8 @@ The spin math has unit tests (`npm run test`). The Tailwind migration was also c
 
 ## Attribution
 
-Developed for the GDG on Campus University of Primorska chapter. This starter project does not include a third-party brand font, downloaded graphics, or a software license; choose a license before publishing it for public reuse.
+Developed for the GDG on Campus University of Primorska chapter. Font: [Inter Tight](https://fonts.google.com/specimen/Inter+Tight) (SIL Open Font License), bundled through `@fontsource-variable/inter-tight`.
 
-## Latest layout adjustment (2026-10-09)
+Background photo: [Nimbus clouds and blue calm sky](https://unsplash.com/photos/nimbus-clouds-and-blue-calm-sky-9BJRGlqoIUk) by [Pero Kalimero](https://unsplash.com/@pericakalimerica) on Unsplash, used under the [Unsplash License](https://unsplash.com/license).
 
-This revision changes only layout-related Tailwind classes in `src/App.tsx`, `src/components/ChallengePanel.tsx`, and the custom variant in `src/styles.css`:
-
-- `desktop:min-h-[510px]` restores a little room between the result, category legend, and spin button on laptops.
-- `touch-landscape:items-center` vertically centers the panel when Android Chrome's toolbar shortens the viewport.
-- `touch-landscape:h-auto touch-landscape:min-h-[min(290px,100%)]` prevents the large empty space inside the tablet panel without changing the wheel size.
-
-No category names, game logic or animations were changed.
+The project has no software license yet; choose one before publishing it for public reuse.
