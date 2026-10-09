@@ -1,12 +1,8 @@
-export type IconName = 'sparkle' | 'shield' | 'monitor' | 'bug' | 'bulb' | 'dice';
-
 export interface Category {
   id: string;
   name: string;
   lines: readonly [string, string];
   color: string;
-  ink: string;
-  icon: IconName;
   description: string;
 }
 

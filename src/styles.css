@@ -21,7 +21,6 @@ body {
 
 button:focus-visible { outline: 3px solid var(--color-royal); outline-offset: 4px; }
 .wheel-rotator { transform-origin: 300px 300px; will-change: transform; }
-@keyframes twirl { to { transform: rotate(360deg); } }
 .confetti-piece { position: absolute; top: -35px; left: var(--left); opacity: 0; border-radius: 2px;
   width: var(--width); height: var(--height); background: var(--color);
   animation: confetti-fall var(--duration) var(--delay) cubic-bezier(.15,.65,.4,.98) forwards;

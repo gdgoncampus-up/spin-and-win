@@ -52,13 +52,13 @@ export default function App() {
             <StepRail current={state.status === 'winner' ? 1 : 0} />
           </div>
 
-          <div className="w-[clamp(300px,30vw,520px)] max-[900px]:mx-auto max-[900px]:mt-[22px] max-[900px]:w-[min(78vw,340px)]">
+          <div className="w-[clamp(300px,30vw,520px)] max-[900px]:mx-auto max-[900px]:mt-[22px] max-[900px]:w-[min(78vw,460px)]">
             <ChallengeWheel categories={EVENT.categories} rotatorRef={rotatorRef} spinning={spinning}
               highlightIndex={spinning ? null : state.winnerIndex ?? 0} restAngle={state.restAngle} onSpin={spin} />
           </div>
 
           <div className="flex flex-col items-end gap-[clamp(40px,12vh,140px)] pt-[clamp(0px,6vh,60px)] max-[900px]:mt-4 max-[900px]:items-stretch max-[900px]:pt-0">
-            <div className="w-full max-w-[450px] max-[900px]:max-w-none">
+            <div className="w-full max-w-[450px] max-[900px]:mx-auto max-[900px]:max-w-[560px]">
               <ChallengePanel categories={EVENT.categories} state={state} onSpin={spin} />
             </div>
             {count > 0 && (
