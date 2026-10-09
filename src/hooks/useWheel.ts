@@ -3,7 +3,7 @@ import type { WheelState } from '../types';
 import { randomFloat, randomInt } from '../lib/random';
 import { getSliceDegrees, makeSpinAngle, normalizeAngle } from '../lib/wheelMath';
 
-const INITIAL_STATE: WheelState = { status: 'idle', winnerIndex: null };
+const INITIAL_STATE: WheelState = { status: 'idle', winnerIndex: null, restAngle: 0 };
 
 /**
  * React owns game state; the SVG transform is updated imperatively to guarantee
@@ -21,7 +21,7 @@ export function useWheel(categoryCount: number) {
     const rotator = rotatorRef.current;
     if (!rotator || spinningRef.current || categoryCount < 2) return;
     spinningRef.current = true;
-    setState({ status: 'spinning', winnerIndex: null });
+    setState(prev => ({ ...prev, status: 'spinning', winnerIndex: null }));
 
     const index = randomInt(categoryCount);
     const slice = getSliceDegrees(categoryCount);
@@ -46,7 +46,7 @@ export function useWheel(categoryCount: number) {
       angleRef.current = finalAngle;
       spinningRef.current = false;
       finishTimeoutRef.current = null;
-      setState({ status: 'winner', winnerIndex: index });
+      setState({ status: 'winner', winnerIndex: index, restAngle: normalizeAngle(finalAngle) });
     }, duration + 120);
   }, [categoryCount]);
 

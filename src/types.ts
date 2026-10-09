@@ -15,4 +15,6 @@ export type GameStatus = 'idle' | 'spinning' | 'winner';
 export interface WheelState {
   status: GameStatus;
   winnerIndex: number | null;
+  /** Wheel rotation in degrees once it has come to rest. */
+  restAngle: number;
 }

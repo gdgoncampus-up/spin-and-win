@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { Category } from '../types';
-import { polarPoint } from '../lib/wheelMath';
+import { normalizeAngle, polarPoint } from '../lib/wheelMath';
 import { GdgLogo } from './GdgLogo';
 
 interface ChallengeWheelProps {
@@ -9,6 +9,8 @@ interface ChallengeWheelProps {
   spinning: boolean;
   /** Segment drawn in solid blue: the one resting under the pointer. */
   highlightIndex: number | null;
+  /** Current rest rotation, so labels can be flipped to read upright where they stopped. */
+  restAngle: number;
   onSpin: () => void;
 }
 
@@ -28,12 +30,13 @@ function segmentPath(index: number, count: number): string {
     + ` L${f(ix1)} ${f(iy1)} A${INNER} ${INNER} 0 0 0 ${f(ix0)} ${f(iy0)} Z`;
 }
 
-/** Labels run across the segment; the lower half is flipped so it never reads upside down at rest. */
-function labelRotation(angle: number): number {
-  return angle > 90 && angle < 270 ? angle + 180 : angle;
+/** Labels run across the segment; any that would rest in the lower half are flipped to read upright. */
+function labelRotation(angle: number, restAngle: number): number {
+  const onScreen = normalizeAngle(angle + restAngle);
+  return onScreen > 90 && onScreen < 270 ? angle + 180 : angle;
 }
 
-export function ChallengeWheel({ categories, rotatorRef, spinning, highlightIndex, onSpin }: ChallengeWheelProps) {
+export function ChallengeWheel({ categories, rotatorRef, spinning, highlightIndex, restAngle, onSpin }: ChallengeWheelProps) {
   const labelRadius = (OUTER + INNER) / 2 + 6;
 
   return (
@@ -50,7 +53,7 @@ export function ChallengeWheel({ categories, rotatorRef, spinning, highlightInde
                 <path d={segmentPath(index, categories.length)}
                   fill={active ? 'var(--color-royal)' : index % 2 ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.62)'}
                   stroke="rgba(11,42,102,.22)" strokeWidth="2" className="transition-[fill] duration-300" />
-                <text transform={`translate(${lx.toFixed(3)} ${ly.toFixed(3)}) rotate(${labelRotation(angle)})`}
+                <text transform={`translate(${lx.toFixed(3)} ${ly.toFixed(3)}) rotate(${labelRotation(angle, restAngle)})`}
                   fill={active ? '#fff' : 'var(--color-navy)'} textAnchor="middle"
                   fontSize="23" fontWeight="600" letterSpacing="2.6">
                   <tspan x="0" dy="-4">{cat.lines[0]}</tspan>
