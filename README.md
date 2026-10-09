@@ -1,121 +1,136 @@
-# GDG on Campus UP — ŠtartUP 2026 Challenge Wheel
+# GDG Challenge Wheel
 
-A polished, reusable **React + Vite + TypeScript** spinning wheel for GDG on Campus University of Primorska. It chooses one of six challenge categories corresponding to the printed activity cards.
+A reusable, self-hostable challenge wheel for **GDG on Campus — University of Primorska**.
+
+Current event: **ŠtartUP 2026**. Visitors spin a six-category wheel, draw a matching **physical challenge card**, complete it, and receive a stamp.
+
+Built with **React 19, TypeScript, Vite 7, and Tailwind CSS v4**. No backend, database, icon library, web fonts, or external API requests are required at runtime.
 
 ## Quick start
 
-You need **Node.js 22.12+** and npm. In this folder:
+Requires Node.js **22.12+** and npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the localhost URL that Vite prints (normally `http://localhost:5173`).
+Open the local URL shown by Vite (usually `http://localhost:5173`).
 
-### Commands
+```bash
+npm run test       # Unit tests for wheel selection and pointer alignment
+npm run typecheck  # TypeScript check
+npm run build      # Output to dist/
+npm run preview    # Preview the production output
+```
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Run development server |
-| `npm run build` | Type-check then bundle to `dist/` |
-| `npm run preview` | Test production build locally |
-| `npm run typecheck` | Type-check the TypeScript project |
-| `npm test` | Check wheel alignment mathematics (Node 22+) |
+> If you used a previous version of this project, run `npm install` again. Tailwind v4 and the Vite plugin are new dependencies.
 
-## Tablet layout (no scrolling)
+## Project layout
 
-The interface automatically switches to a **single-screen kiosk layout** on
-landscape tablets, compact laptop windows, and portrait tablets. It sizes the
-wheel from **available viewport height**, not only width, and compresses the
-header and challenge panel for short displays. No horizontal or vertical
-scrolling is required on common tablet landscape sizes (e.g. 1280×800,
-1024×768, 960×600) or portrait sizes (768×1024, 800×1280).
+```text
+gdg-challenge-wheel/
+├── index.html                     # Minimal Vite mount point, not UI markup
+├── vite.config.ts                 # Vite + React + Tailwind v4
+├── src/
+│   ├── config/event.ts            # Event copy and current category selection
+│   ├── data/categories.ts         # Six currently hardcoded categories
+│   ├── components/
+│   │   ├── ChallengeWheel.tsx     # SVG slices, labels, pointer and spin button
+│   │   ├── ChallengePanel.tsx     # Result, category legend and repeat button
+│   │   ├── Header.tsx             # Event badge, sound and fullscreen controls
+│   │   ├── Confetti.tsx           # Celebration particles
+│   │   └── Glyph.tsx              # Tiny inline icon drawings
+│   ├── hooks/useWheel.ts          # Spin state and animation
+│   ├── hooks/useSound.ts          # Optional Web Audio sound
+│   ├── lib/wheelMath.ts           # Framework-independent wheel geometry
+│   ├── lib/wheelMath.test.ts      # Wheel alignment tests
+│   ├── styles.css                 # Tailwind import + special visuals/breakpoints
+│   ├── App.tsx                    # Composes the screen
+│   └── main.tsx                   # React entrypoint
+└── package.json
+```
 
-The game remains usable on smaller phones and unusually short browser windows;
-these can scroll rather than hiding essential controls. If a browser has
-large UI bars, use the fullscreen button in the upper right to maximize room.
+## Customization (hardcoded for now)
 
-## For tomorrow's booth
+- Change the **event title, university name, intro copy, footer text, and category list** in `src/config/event.ts`.
+- Change **category names, colors, icons, labels and instructions** in `src/data/categories.ts`.
+- `ChallengeWheel` draws segments from the array; `useWheel` calculates angles using the category count. There is no need to rewrite the spin logic to reorder categories.
+- For now each category has two short lines designed for the six-segment wheel. Long labels or substantially different category counts will need layout testing.
+- Questions and answers are **not stored in the app yet**: the game deliberately uses the already printed cards. A future release can add typed `Question` objects and choose a random question on-screen.
 
-1. Install dependencies and build **before** the event, while internet is available.
-2. Keep the `dist/` folder on your laptop.
-3. Start a local HTTP server (no internet required after dependencies are installed and built):
+**Future direction:** load a validated event configuration from a local JSON file, server endpoint or admin screen, and later add questions/answers, game modes and event-specific branding. That is **not implemented in this release**; the configuration is TypeScript source code and requires a rebuild after edits.
 
-   ```bash
-   cd dist
-   python3 -m http.server 8080 --bind 127.0.0.1
-   ```
+## Why little HTML and CSS?
 
-4. Open `http://localhost:8080/`. Use the top-right fullscreen button (or F11).
-5. Students spin, choose a printed card matching the color/category, answer, and collect a stamp.
+`index.html` is only the root element and Vite script. The UI lives in `.tsx` components, which GitHub recognizes as **TypeScript**. Tailwind utility classes handle layout, color, typography and responsiveness. `src/styles.css` only contains the Tailwind import, special fullscreen/tablet breakpoints, pseudo-elements for the pointer, background effects and keyframe animations.
 
-**Backup:** `offline-backup/index.html` contains the original standalone, non-React wheel. It opens directly without a local server. The React project itself needs to be built and served over HTTP; opening `dist/index.html` directly via `file://` can fail because browsers restrict module loading.
+The much longer 18 KB stylesheet from the earlier non-Tailwind version is **not used** by this project. Check that `src/styles.css` begins with `@import "tailwindcss";`. The previous standalone `offline-backup/index.html` is **intentionally not included** in this repository because it was an entire second application in one HTML file and artificially increased GitHub's HTML percentage. The former project archive can be retained separately as an emergency fallback.
 
-## Edit the wheel
+`.gitignore` excludes `node_modules`, `dist` and temporary build files. Do not commit your generated `dist/` directory to the source branch unless you're deliberately publishing a dedicated deployment branch.
 
-- **Categories:** `src/data/categories.ts` — change names, colors, descriptions, two-line wheel labels. No need to edit SVG markup.
-- **Wheel geometry:** `src/lib/wheelMath.ts` — pure, unit-tested geometry and pointer alignment.
-- **Spin timing/selection:** `src/hooks/useWheel.ts` — duration, turns, safe random jitter.
-- **Sound:** `src/hooks/useSound.ts` — generated Web Audio tones; no external files.
-- **Icons:** `src/components/Glyph.tsx` — locally drawn SVG paths.
-- **Styling:** `src/styles.css` — the look from the original standalone wheel.
+## Tablet / kiosk layout
 
-Current order / printed-card colors:
+- On typical landscape and portrait tablets the game is sized to **100dvh**, with screen-height-aware wheel dimensions.
+- On large laptop/desktop screens with a mouse or trackpad, the result panel uses a balanced 510px minimum height with more breathing room, rather than stretching to the wheel height. A dedicated Tailwind `desktop:` variant isolates this from touch tablet layouts.
+- On landscape touch tablets with the browser toolbar visible, the result panel is centered independently of the wheel and no longer stretches to fill all available height. The `touch-landscape:` variant enforces this on coarse-pointer displays.
+- On especially short landscape viewports the category legend is hidden to prioritize the wheel and the selected challenge; the tablet panel can shrink to a comfortable 290px minimum height so it does not look empty.
+- On phones, vertical scrolling is allowed so the game controls are not clipped.
+- Use the header button for fullscreen. Space also spins the wheel when focus is not on a form control.
+- The wheel respects the operating system's reduced-motion preference.
 
-1. Google & Tech — blue
-2. Cyber Smart — red
-3. Guess the Tech — green
-4. Debug It! — orange
-5. Tech Trivia — purple
-6. Wildcard — pink
+## Deploy using Caddy
 
-All segments have equal probability. There is no tracking, no database, no API, no external CDN, and no server-side code. The game supports sound toggle, fullscreen, keyboard Space, and reduced-motion settings.
+Build the project:
 
-## Self-host using Caddy
+```bash
+npm install
+npm run build
+sudo mkdir -p /srv/www/gdg-wheel
+sudo cp -a dist/. /srv/www/gdg-wheel/
+```
 
-Run `npm run build` on your laptop or CI, copy the contents of `dist/` to a directory on your Caddy host (for example `/srv/gdg-wheel`), then configure a virtual host:
+Basic Caddy configuration:
 
 ```caddyfile
 wheel.example.com {
-    root * /srv/gdg-wheel
+    root * /srv/www/gdg-wheel
     encode zstd gzip
     try_files {path} /index.html
     file_server
 }
 ```
 
-If your DNS and Cloudflare Tunnel already route `wheel.example.com` to Caddy, no extra backend is needed. Replace the example hostname with your own domain. For access on two local devices, host over your laptop's LAN address and make sure both devices can reach it; this requires only a working LAN/Wi-Fi, not an internet connection.
+Substitute your own hostname and deploy through your existing reverse-proxy / tunnel setup.
 
-## Project layout
+### Event-day offline fallback
 
-```text
-gdg-startup-wheel-react/
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── src/
-│   ├── App.tsx
-│   ├── main.tsx
-│   ├── styles.css
-│   ├── types.ts
-│   ├── components/
-│   │   ├── ChallengeWheel.tsx
-│   │   ├── ChallengePanel.tsx
-│   │   ├── Confetti.tsx
-│   │   ├── Header.tsx
-│   │   └── Glyph.tsx
-│   ├── data/categories.ts
-│   ├── hooks/useWheel.ts
-│   ├── hooks/useSound.ts
-│   └── lib/
-│       ├── random.ts
-│       ├── wheelMath.ts
-│       └── wheelMath.test.ts
-└── offline-backup/index.html
+`dist/` is a static application that needs an HTTP server (do not double-click `dist/index.html` from `file://`):
+
+```bash
+npm run build
+cd dist
+python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-## License / community use
+Then open `http://localhost:8080` on the laptop. Once the build exists, this needs no internet connection or npm registry. For access from a separate tablet, serve on a trusted local network and use the laptop's LAN address; don't publicly expose the development server.
 
-This sample is independently authored for the user's GDG on Campus project, with no proprietary logos or bundled Google brand assets. If publishing it, choose your preferred repository license and follow relevant GDG/Google branding guidance. Do not mistake the custom four-color mark for an official GDG logo.
+**Note:** This is not yet a PWA/service-worker cache. Opening the remote hosted URL for the first time still requires a network connection. Keep an offline copy of the built assets and use a local HTTP server for reliability.
+
+## Testing
+
+The spin math has unit tests (`npm run test`). The Tailwind migration was also checked against Tailwind v4.1.10's compiler and visually inspected using a static DOM-rendering harness at common tablet resolutions. The full Vite install/build needs to be run on your computer because the package registry was inaccessible in the creation environment.
+
+## Attribution
+
+Developed for the GDG on Campus University of Primorska chapter. This starter project does not include a third-party brand font, downloaded graphics, or a software license; choose a license before publishing it for public reuse.
+
+## Latest layout adjustment (2026-10-09)
+
+This revision changes only layout-related Tailwind classes in `src/App.tsx`, `src/components/ChallengePanel.tsx`, and the custom variant in `src/styles.css`:
+
+- `desktop:min-h-[510px]` restores a little room between the result, category legend, and spin button on laptops.
+- `touch-landscape:items-center` vertically centers the panel when Android Chrome's toolbar shortens the viewport.
+- `touch-landscape:h-auto touch-landscape:min-h-[min(290px,100%)]` prevents the large empty space inside the tablet panel without changing the wheel size.
+
+No category names, game logic or animations were changed.

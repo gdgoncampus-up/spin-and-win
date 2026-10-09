@@ -4,15 +4,13 @@ import type { Category } from '../types';
 import { randomFloat, randomInt } from '../lib/random';
 
 interface ConfettiProps { burst: number; categories: readonly Category[] }
-
 interface Particle { id: number; style: CSSProperties }
 
 export function Confetti({ burst, categories }: ConfettiProps) {
   const [pieces, setPieces] = useState<Particle[]>([]);
 
   useEffect(() => {
-    if (burst === 0) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (burst === 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const colors = categories.map(category => category.color);
     const newPieces = Array.from({ length: 64 }, (_, id) => ({
       id,
@@ -32,7 +30,7 @@ export function Confetti({ burst, categories }: ConfettiProps) {
     return () => clearTimeout(timeout);
   }, [burst, categories]);
 
-  return <div className="confetti-layer" aria-hidden="true">
-    {pieces.map(piece => <i key={`${burst}-${piece.id}`} className="confetti-piece" style={piece.style}/>)}
+  return <div className="pointer-events-none fixed inset-0 z-100 overflow-hidden motion-reduce:hidden" aria-hidden="true">
+    {pieces.map(piece => <i key={`${burst}-${piece.id}`} className="confetti-piece" style={piece.style} />)}
   </div>;
 }
