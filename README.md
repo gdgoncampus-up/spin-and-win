@@ -23,6 +23,19 @@ Open the localhost URL that Vite prints (normally `http://localhost:5173`).
 | `npm run typecheck` | Type-check the TypeScript project |
 | `npm test` | Check wheel alignment mathematics (Node 22+) |
 
+## Tablet layout (no scrolling)
+
+The interface automatically switches to a **single-screen kiosk layout** on
+landscape tablets, compact laptop windows, and portrait tablets. It sizes the
+wheel from **available viewport height**, not only width, and compresses the
+header and challenge panel for short displays. No horizontal or vertical
+scrolling is required on common tablet landscape sizes (e.g. 1280×800,
+1024×768, 960×600) or portrait sizes (768×1024, 800×1280).
+
+The game remains usable on smaller phones and unusually short browser windows;
+these can scroll rather than hiding essential controls. If a browser has
+large UI bars, use the fullscreen button in the upper right to maximize room.
+
 ## For tomorrow's booth
 
 1. Install dependencies and build **before** the event, while internet is available.
