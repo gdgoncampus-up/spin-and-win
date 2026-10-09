@@ -45,17 +45,6 @@ button:focus-visible { outline: 3px solid #d9e6ff; outline-offset: 4px; }
 .eyebrow::before, .eyebrow::after { content: ""; height: 1px; width: 22px; background: currentColor; opacity: .55; }
 .gradient-title { background: linear-gradient(110deg,#9bc3ff,#8fc7ff 25%,#82dcb3 58%,#ffe08b); background-clip: text; color: transparent; }
 .wheel-rotator { transform-origin: 300px 300px; will-change: transform; }
-.wheel-glow::before { content: ""; position: absolute; inset: 9%; z-index: -1; opacity: .21; filter: blur(46px);
-  background: conic-gradient(#4285f4,#ea4335,#34a853,#da9600,#7657d9,#d44c9a,#4285f4);
-}
-.wheel-pointer::before { content: ""; position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-  width: 29px; height: 21px; background: white; border-radius: 9px 9px 3px 3px; }
-.wheel-pointer::after { content: ""; position: absolute; left: 50%; top: 15px; transform: translateX(-50%);
-  border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid white; }
-.hub-button { background: radial-gradient(circle at 33% 25%,#263451,#101a2e 75%);
-  box-shadow: 0 4px 0 #050a14, 0 0 0 7px rgba(9,14,29,.29), 0 12px 18px rgba(0,0,0,.4), inset 0 1px 12px rgba(255,255,255,.085);
-}
-.hub-button:hover:not(:disabled) { box-shadow: 0 4px 0 #050a14, 0 0 0 7px rgba(9,14,29,.29), 0 0 35px rgba(66,133,244,.42); }
 @keyframes twirl { to { transform: rotate(360deg); } }
 .confetti-piece { position: absolute; top: -35px; left: var(--left); opacity: 0; border-radius: 2px;
   width: var(--width); height: var(--height); background: var(--color);

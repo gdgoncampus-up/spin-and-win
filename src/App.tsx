@@ -53,7 +53,8 @@ export default function App() {
             </p>
           </section>
           <section aria-label="Challenge wheel game" className="grid grid-cols-[minmax(0,1.17fr)_minmax(345px,.83fr)] items-center gap-[min(3vw,38px)] pt-[22px] pb-[15px] max-[900px]:grid-cols-1 max-[900px]:gap-0 kiosk:min-h-0 kiosk:flex-1 kiosk:grid-cols-[minmax(0,1.12fr)_minmax(0,.88fr)] kiosk:items-stretch desktop:items-center touch-landscape:items-center kiosk:gap-[clamp(12px,2vw,32px)] kiosk:py-[clamp(7px,1.1dvh,13px)] portrait-tab:min-h-0 portrait-tab:flex-1 portrait-tab:grid-cols-1 portrait-tab:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] portrait-tab:items-stretch portrait-tab:gap-1.5 portrait-tab:py-2 short:grid-cols-2 short:gap-3 short:py-1">
-            <ChallengeWheel categories={EVENT.categories} rotatorRef={rotatorRef} spinning={state.status === 'spinning'} onSpin={spin} />
+            <ChallengeWheel categories={EVENT.categories} rotatorRef={rotatorRef} spinning={state.status === 'spinning'}
+              highlightIndex={state.status === 'spinning' ? null : state.winnerIndex ?? 0} onSpin={spin} />
             <ChallengePanel categories={EVENT.categories} state={state} onSpin={spin} />
           </section>
           <div className="flex flex-wrap items-center justify-center gap-[13px] border-t border-white/[.075] pt-3.5 pb-[23px] max-[570px]:gap-[7px] kiosk:shrink-0 kiosk:flex-nowrap kiosk:gap-[clamp(8px,1vw,16px)] kiosk:py-2 portrait-tab:hidden short:py-1" aria-label="How to play">

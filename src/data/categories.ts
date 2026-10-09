@@ -6,7 +6,7 @@ import type { Category } from '../types';
  */
 export const CATEGORIES: readonly Category[] = [
   {
-    id: 'google', name: 'Google & Tech', lines: ['GOOGLE &', 'TECH'],
+    id: 'google', name: 'Google & Tech', lines: ['GOOGLE', '& TECH'],
     color: '#4285F4', ink: '#ffffff', icon: 'sparkle',
     description: 'A little Google knowledge and everyday technology. Grab a blue card!',
   },
@@ -16,7 +16,7 @@ export const CATEGORIES: readonly Category[] = [
     description: 'Spot a scam, protect your accounts, and stay safe online. Grab a red card!',
   },
   {
-    id: 'guess', name: 'Guess the Tech', lines: ['GUESS THE', 'TECH'],
+    id: 'guess', name: 'Guess the Tech', lines: ['GUESS', 'THE TECH'],
     color: '#34A853', ink: '#ffffff', icon: 'monitor',
     description: 'Look at the clues and identify the tech. Grab a green card!',
   },
