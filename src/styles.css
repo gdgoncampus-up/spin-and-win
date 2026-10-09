@@ -21,12 +21,6 @@ body {
 
 button:focus-visible { outline: 3px solid var(--color-royal); outline-offset: 4px; }
 .wheel-rotator { transform-origin: 300px 300px; will-change: transform; }
-.confetti-piece { position: absolute; top: -35px; left: var(--left); opacity: 0; border-radius: 2px;
-  width: var(--width); height: var(--height); background: var(--color);
-  animation: confetti-fall var(--duration) var(--delay) cubic-bezier(.15,.65,.4,.98) forwards;
-}
-@keyframes confetti-fall { 0% {opacity:1;transform:translate3d(0,-10px,0) rotate(0)} 95% {opacity:1}
-  100% {opacity:0;transform:translate3d(var(--drift),110vh,0) rotate(var(--rotation))} }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

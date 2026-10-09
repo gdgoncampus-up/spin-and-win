@@ -4,14 +4,39 @@ import { ChallengePanel } from './components/ChallengePanel';
 import { Confetti } from './components/Confetti';
 import { Header } from './components/Header';
 import { StepRail } from './components/StepRail';
+import { StyleLab } from './components/StyleLab';
 import { EVENT } from './config/event';
 import { useWheel } from './hooks/useWheel';
 import { useSound } from './hooks/useSound';
 import { useSpinCount } from './hooks/useSpinCount';
+import { SPIN_STYLES, type SpinStyleId } from './lib/spinStyles';
+import { CONFETTI_STYLES, type ConfettiStyleId } from './lib/confetti';
+
+/** Test builds (VITE_STYLE_LAB=true) show a picker for every spin and confetti style. */
+const STYLE_LAB = import.meta.env.VITE_STYLE_LAB === 'true';
+const DEFAULT_SPIN: SpinStyleId = 'ticker';
+const DEFAULT_CONFETTI: ConfettiStyleId = 'paper';
+
+function remembered<T extends string>(key: string, allowed: readonly { id: T }[], fallback: T): T {
+  if (!STYLE_LAB) return fallback;
+  try {
+    const saved = localStorage.getItem(key);
+    return allowed.find(item => item.id === saved)?.id ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function remember(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* storage blocked */ }
+}
 
 export default function App() {
-  const { state, rotatorRef, spin } = useWheel(EVENT.categories.length);
-  const { enabled, toggle, playWinSound } = useSound();
+  const [spinStyle, setSpinStyle] = useState(() => remembered('lab-spin', SPIN_STYLES, DEFAULT_SPIN));
+  const [confettiStyle, setConfettiStyle] = useState(() => remembered('lab-confetti', CONFETTI_STYLES, DEFAULT_CONFETTI));
+  const { enabled, toggle, playWinSound, playTick } = useSound();
+  const { state, rotatorRef, layerRef, pointerRef, spin } = useWheel(EVENT.categories.length, { style: spinStyle, onTick: playTick });
+  const wheelRef = useRef<HTMLDivElement | null>(null);
   const { count, increment } = useSpinCount();
   const [burst, setBurst] = useState(0);
   const lastCelebrated = useRef<typeof state | null>(null);
@@ -52,9 +77,10 @@ export default function App() {
             <StepRail current={state.status === 'winner' ? 1 : 0} />
           </div>
 
-          <div className="w-[clamp(300px,30vw,520px)] max-[900px]:mx-auto max-[900px]:mt-[22px] max-[900px]:w-[min(78vw,460px)]">
-            <ChallengeWheel categories={EVENT.categories} rotatorRef={rotatorRef} spinning={spinning}
-              highlightIndex={spinning ? null : state.winnerIndex ?? 0} restAngle={state.restAngle} onSpin={spin} />
+          <div ref={wheelRef} className="w-[clamp(300px,30vw,520px)] max-[900px]:mx-auto max-[900px]:mt-[22px] max-[900px]:w-[min(78vw,460px)]">
+            <ChallengeWheel categories={EVENT.categories} rotatorRef={rotatorRef} layerRef={layerRef} pointerRef={pointerRef} spinning={spinning}
+              highlightIndex={spinning ? state.cursorIndex : state.winnerIndex ?? 0} restAngle={state.restAngle}
+              lift={spinStyle === 'focus' && state.status === 'winner'} onSpin={spin} />
           </div>
 
           <div className="flex flex-col items-end gap-[clamp(40px,12vh,140px)] pt-[clamp(0px,6vh,60px)] max-[900px]:mt-4 max-[900px]:items-stretch max-[900px]:pt-0">
@@ -79,7 +105,14 @@ export default function App() {
           SPIN. PLAY.<span className="block text-right">LEARN TECH</span>
         </p>
       </div>
-      <Confetti burst={burst} categories={EVENT.categories} />
+      <Confetti burst={burst} style={confettiStyle} originRef={wheelRef}
+        categoryId={EVENT.categories[state.winnerIndex ?? 0]?.id} />
+      {STYLE_LAB && (
+        <StyleLab spin={spinStyle} confetti={confettiStyle}
+          onSpinChange={id => { setSpinStyle(id); remember('lab-spin', id); }}
+          onConfettiChange={id => { setConfettiStyle(id); remember('lab-confetti', id); }}
+          onReplayConfetti={() => setBurst(value => value + 1)} />
+      )}
     </>
   );
 }

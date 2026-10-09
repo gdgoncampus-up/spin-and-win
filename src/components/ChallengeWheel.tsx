@@ -6,11 +6,15 @@ import { GdgLogo } from './GdgLogo';
 interface ChallengeWheelProps {
   categories: readonly Category[];
   rotatorRef: RefObject<SVGGElement | null>;
+  layerRef: RefObject<HTMLDivElement | null>;
+  pointerRef: RefObject<SVGGElement | null>;
   spinning: boolean;
   /** Segment drawn in solid blue: the one resting under the pointer. */
   highlightIndex: number | null;
   /** Current rest rotation, so labels can be flipped to read upright where they stopped. */
   restAngle: number;
+  /** Lift the highlighted slice out of the ring (used when a spin lands). */
+  lift: boolean;
   onSpin: () => void;
 }
 
@@ -36,11 +40,12 @@ function labelRotation(angle: number, restAngle: number): number {
   return onScreen > 90 && onScreen < 270 ? angle + 180 : angle;
 }
 
-export function ChallengeWheel({ categories, rotatorRef, spinning, highlightIndex, restAngle, onSpin }: ChallengeWheelProps) {
+export function ChallengeWheel({ categories, rotatorRef, layerRef, pointerRef, spinning, highlightIndex, restAngle, lift, onSpin }: ChallengeWheelProps) {
   const labelRadius = (OUTER + INNER) / 2 + 6;
 
   return (
     <div className="relative aspect-square w-full">
+      <div ref={layerRef} className="size-full will-change-[transform,filter]">
       <svg className="block size-full overflow-visible" viewBox="0 0 600 600" role="img"
         aria-label={`${categories.length}-part challenge wheel; the pointer at the top marks the winning category`}>
         <g className="wheel-rotator" ref={rotatorRef}>
@@ -48,11 +53,13 @@ export function ChallengeWheel({ categories, rotatorRef, spinning, highlightInde
             const angle = index * 360 / categories.length;
             const [lx, ly] = polarPoint(angle, labelRadius);
             const active = index === highlightIndex;
+            const [ox, oy] = polarPoint(angle, 16, 0);
             return (
-              <g key={cat.id}>
+              <g key={cat.id} className="transition-transform duration-500 ease-[cubic-bezier(.34,1.56,.64,1)]"
+                style={{ transform: active && lift ? `translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px)` : undefined }}>
                 <path d={segmentPath(index, categories.length)}
                   fill={active ? 'var(--color-royal)' : index % 2 ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.62)'}
-                  stroke="rgba(11,42,102,.22)" strokeWidth="2" className="transition-[fill] duration-300" />
+                  stroke="rgba(11,42,102,.22)" strokeWidth="2" className="transition-[fill] duration-150" />
                 <text transform={`translate(${lx.toFixed(3)} ${ly.toFixed(3)}) rotate(${labelRotation(angle, restAngle)})`}
                   fill={active ? '#fff' : 'var(--color-navy)'} textAnchor="middle"
                   fontSize="23" fontWeight="600" letterSpacing="2.6">
@@ -63,7 +70,12 @@ export function ChallengeWheel({ categories, rotatorRef, spinning, highlightInde
             );
           })}
         </g>
-        <path d="M286 -10h28l-14 32z" fill="var(--color-royal)" />
+      </svg>
+      </div>
+      <svg className="pointer-events-none absolute top-0 left-0 size-full overflow-visible" viewBox="0 0 600 600" aria-hidden="true">
+        <g ref={pointerRef} className="[transform-origin:300px_-10px]">
+          <path d="M286 -10h28l-14 32z" fill="var(--color-royal)" />
+        </g>
       </svg>
       <button type="button" onClick={onSpin} disabled={spinning} aria-label="Spin the wheel"
         className="absolute top-1/2 left-1/2 grid aspect-square w-[28%] -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white transition-transform duration-200 hover:scale-[1.04] disabled:cursor-wait">
