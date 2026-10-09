@@ -1,48 +1,108 @@
-# GDG on Campus UP - ŠtartUP 2026 Challenge Wheel
+# GDG on Campus UP — ŠtartUP 2026 Challenge Wheel
 
-A polished, offline-first spinning wheel for GDG on Campus, University of Primorska. The categories match the **six printed challenge-card sets**:
+A polished, reusable **React + Vite + TypeScript** spinning wheel for GDG on Campus University of Primorska. It chooses one of six challenge categories corresponding to the printed activity cards.
 
-1. Google & Tech (blue)
-2. Cyber Smart (red)
-3. Guess the Tech (green)
-4. Debug It! (orange)
-5. Tech Trivia (purple)
-6. Wildcard (pink)
+## Quick start
 
-## Use it at the stand
+You need **Node.js 22.12+** and npm. In this folder:
 
-1. Open `index.html` directly in Chrome, Chromium, Firefox, or Edge on your laptop — **no internet required**.
-2. Click the fullscreen button (top right), or press **F11** in your browser.
-3. Ask the student to press **SPIN**, or press **Space** yourself.
-4. When the wheel stops, let them draw a card from the matching category.
-5. Help them with the question and give them the ŠtartUP stamp.
+```bash
+npm install
+npm run dev
+```
 
-**Tip:** Leave your tablet displaying your GDG registration/follow QR code. The wheel doesn't need the tablet or a second service.
+Open the localhost URL that Vite prints (normally `http://localhost:5173`).
 
-## Self-host (Caddy)
+### Commands
 
-Copy `index.html` to a folder that your web server can serve, such as `/var/www/gdg-wheel/index.html`.
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Run development server |
+| `npm run build` | Type-check then bundle to `dist/` |
+| `npm run preview` | Test production build locally |
+| `npm run typecheck` | Type-check the TypeScript project |
+| `npm test` | Check wheel alignment mathematics (Node 22+) |
 
-Minimal Caddyfile example for a **new** site block (replace the domain with one you control):
+## For tomorrow's booth
+
+1. Install dependencies and build **before** the event, while internet is available.
+2. Keep the `dist/` folder on your laptop.
+3. Start a local HTTP server (no internet required after dependencies are installed and built):
+
+   ```bash
+   cd dist
+   python3 -m http.server 8080 --bind 127.0.0.1
+   ```
+
+4. Open `http://localhost:8080/`. Use the top-right fullscreen button (or F11).
+5. Students spin, choose a printed card matching the color/category, answer, and collect a stamp.
+
+**Backup:** `offline-backup/index.html` contains the original standalone, non-React wheel. It opens directly without a local server. The React project itself needs to be built and served over HTTP; opening `dist/index.html` directly via `file://` can fail because browsers restrict module loading.
+
+## Edit the wheel
+
+- **Categories:** `src/data/categories.ts` — change names, colors, descriptions, two-line wheel labels. No need to edit SVG markup.
+- **Wheel geometry:** `src/lib/wheelMath.ts` — pure, unit-tested geometry and pointer alignment.
+- **Spin timing/selection:** `src/hooks/useWheel.ts` — duration, turns, safe random jitter.
+- **Sound:** `src/hooks/useSound.ts` — generated Web Audio tones; no external files.
+- **Icons:** `src/components/Glyph.tsx` — locally drawn SVG paths.
+- **Styling:** `src/styles.css` — the look from the original standalone wheel.
+
+Current order / printed-card colors:
+
+1. Google & Tech — blue
+2. Cyber Smart — red
+3. Guess the Tech — green
+4. Debug It! — orange
+5. Tech Trivia — purple
+6. Wildcard — pink
+
+All segments have equal probability. There is no tracking, no database, no API, no external CDN, and no server-side code. The game supports sound toggle, fullscreen, keyboard Space, and reduced-motion settings.
+
+## Self-host using Caddy
+
+Run `npm run build` on your laptop or CI, copy the contents of `dist/` to a directory on your Caddy host (for example `/srv/gdg-wheel`), then configure a virtual host:
 
 ```caddyfile
 wheel.example.com {
-    root * /var/www/gdg-wheel
+    root * /srv/gdg-wheel
+    encode zstd gzip
+    try_files {path} /index.html
     file_server
 }
 ```
 
-Use your existing Cloudflare Tunnel / reverse-proxy routing if desired. Do not expose your Caddy admin endpoint. If you only need the wheel at the event, **opening the local file is safer** than relying on the event Wi-Fi.
+If your DNS and Cloudflare Tunnel already route `wheel.example.com` to Caddy, no extra backend is needed. Replace the example hostname with your own domain. For access on two local devices, host over your laptop's LAN address and make sure both devices can reach it; this requires only a working LAN/Wi-Fi, not an internet connection.
 
-## Customize
+## Project layout
 
-All code is in `index.html`. Search for `const CATEGORIES` in the bottom `<script>` section. You can edit each category's `name`, `lines` (text drawn on the wheel), `color`, `icon`, and `description`.
+```text
+gdg-startup-wheel-react/
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── src/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── styles.css
+│   ├── types.ts
+│   ├── components/
+│   │   ├── ChallengeWheel.tsx
+│   │   ├── ChallengePanel.tsx
+│   │   ├── Confetti.tsx
+│   │   ├── Header.tsx
+│   │   └── Glyph.tsx
+│   ├── data/categories.ts
+│   ├── hooks/useWheel.ts
+│   ├── hooks/useSound.ts
+│   └── lib/
+│       ├── random.ts
+│       ├── wheelMath.ts
+│       └── wheelMath.test.ts
+└── offline-backup/index.html
+```
 
-There are **no dependencies**, fonts to install, remote scripts, tracking, data collection, or required backend. Winner selection is uniform random across categories and includes slight visual variation while staying within the winning slice. Animations honor the system's reduced-motion preference. Sound is **off by default**.
+## License / community use
 
-## Files
-
-- `index.html`: complete standalone webpage
-- `README.md`: these instructions
-
-For later events, simply change the text and categories; the design is reusable.
+This sample is independently authored for the user's GDG on Campus project, with no proprietary logos or bundled Google brand assets. If publishing it, choose your preferred repository license and follow relevant GDG/Google branding guidance. Do not mistake the custom four-color mark for an official GDG logo.
