@@ -75,7 +75,7 @@ export default function App() {
         </main>
 
         <p aria-hidden="true"
-          className="pointer-events-none relative z-0 mt-auto pb-[clamp(16px,3vh,40px)] text-[clamp(46px,11vw,190px)] leading-[.86] font-light tracking-[-.045em] text-white [text-shadow:0_4px_40px_rgba(8,40,120,.35)] select-none max-[900px]:pt-10 max-[900px]:leading-[.9]">
+          className="pointer-events-none relative z-0 mt-auto pb-[clamp(24px,4vh,50px)] text-[clamp(46px,11vw,190px)] leading-[.86] font-light tracking-[-.045em] text-white [text-shadow:0_4px_40px_rgba(8,40,120,.35)] select-none max-[900px]:pt-10 max-[900px]:leading-[.9]">
           SPIN. PLAY.<span className="block text-right">LEARN TECH</span>
         </p>
       </div>
