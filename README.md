@@ -128,3 +128,7 @@ Developed for the GDG on Campus University of Primorska chapter. Font: [Inter Ti
 Background photo: [Nimbus clouds and blue calm sky](https://unsplash.com/photos/nimbus-clouds-and-blue-calm-sky-9BJRGlqoIUk) by [Pero Kalimero](https://unsplash.com/@pericakalimerica) on Unsplash, used under the [Unsplash License](https://unsplash.com/license).
 
 The project has no software license yet; choose one before publishing it for public reuse.
+
+---
+
+Special thanks to @ilijachrchev
