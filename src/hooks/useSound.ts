@@ -41,6 +41,24 @@ export function useSound() {
     });
   }, [enabled, getContext]);
 
+  /** A short, soft click for the pointer passing a divider. */
+  const playTick = useCallback(() => {
+    if (!enabled) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    const oscillator = ctx.createOscillator();
+    const envelope = ctx.createGain();
+    oscillator.type = 'triangle';
+    oscillator.frequency.value = 1800;
+    const start = ctx.currentTime;
+    envelope.gain.setValueAtTime(0.05, start);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, start + 0.035);
+    oscillator.connect(envelope);
+    envelope.connect(ctx.destination);
+    oscillator.start(start);
+    oscillator.stop(start + 0.04);
+  }, [enabled, getContext]);
+
   useEffect(() => () => { void contextRef.current?.close(); }, []);
-  return { enabled, toggle, playWinSound };
+  return { enabled, toggle, playWinSound, playTick };
 }
